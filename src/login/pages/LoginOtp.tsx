@@ -1,14 +1,15 @@
 import { useState, type FormEvent } from "react";
+import { Loader2 } from "lucide-react";
 import type { PageProps } from "keycloakify/login/pages/PageProps";
+import { Button } from "@/components/ui/button";
+import { Label } from "@/components/ui/label";
+import { cn } from "@/lib/utils";
 import type { KcContext } from "../KcContext";
 import type { I18n } from "../i18n";
-import styles from "./LoginOtp.module.css";
 
 type LoginOtpContext = Extract<KcContext, { pageId: "login-otp.ftl" }>;
 
-export default function LoginOtp(
-    props: PageProps<LoginOtpContext, I18n>
-) {
+export default function LoginOtp(props: PageProps<LoginOtpContext, I18n>) {
     const { kcContext, i18n, doUseDefaultCss, Template, classes } = props;
 
     const { url, otpLogin } = kcContext;
@@ -21,8 +22,7 @@ export default function LoginOtp(
         void e;
     }
 
-    const hasMultipleDevices =
-        (otpLogin.userOtpCredentials?.length ?? 0) > 1;
+    const hasMultipleDevices = (otpLogin.userOtpCredentials?.length ?? 0) > 1;
 
     return (
         <Template
@@ -32,26 +32,23 @@ export default function LoginOtp(
             classes={classes}
             headerNode={msg("doLogIn")}
         >
-            <form
-                className={styles.form}
-                action={url.loginAction}
-                method="post"
-                onSubmit={handleSubmit}
-            >
-                <p className={styles.hint}>{msg("loginOtpOneTime")}</p>
+            <form className="space-y-5" action={url.loginAction} method="post" onSubmit={handleSubmit}>
+                <p className="text-sm text-muted-foreground -mt-1">
+                    {msg("loginOtpOneTime")}
+                </p>
 
-                {/* ── Device picker (only when user has > 1 OTP credential) ── */}
+                {/* Device selector */}
                 {hasMultipleDevices && (
-                    <div className={styles.fieldGroup}>
-                        <label htmlFor="selectedCredentialId" className={styles.label}>
+                    <div className="space-y-1.5">
+                        <Label htmlFor="selectedCredentialId">
                             {advancedMsg("loginOtpDevice")}
-                        </label>
+                        </Label>
                         <select
                             id="selectedCredentialId"
                             name="selectedCredentialId"
-                            className={styles.select}
                             defaultValue={otpLogin.selectedCredentialId}
                             disabled={isSubmitting}
+                            className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm shadow-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
                         >
                             {otpLogin.userOtpCredentials!.map(cred => (
                                 <option key={cred.id} value={cred.id}>
@@ -62,35 +59,37 @@ export default function LoginOtp(
                     </div>
                 )}
 
-                {/* ── OTP code input ── */}
-                <div className={styles.fieldGroup}>
-                    <label htmlFor="otp" className={styles.label}>
+                {/* OTP input */}
+                <div className="space-y-1.5">
+                    <Label htmlFor="otp">
                         {msg("loginOtpOneTime")}
-                        <span className={styles.required}>*</span>
-                    </label>
+                        <span className="text-destructive ml-0.5">*</span>
+                    </Label>
                     <input
                         id="otp"
                         name="otp"
                         type="text"
-                        autoComplete="one-time-code"
                         inputMode="numeric"
                         pattern="[0-9]*"
+                        autoComplete="one-time-code"
                         autoFocus
-                        className={styles.otpInput}
-                        placeholder="000000"
-                        disabled={isSubmitting}
                         maxLength={8}
+                        placeholder="000 000"
+                        disabled={isSubmitting}
+                        className={cn(
+                            "flex h-14 w-full rounded-md border border-input bg-background px-4",
+                            "text-center text-2xl font-semibold tracking-[0.4em] tabular-nums shadow-sm",
+                            "placeholder:text-muted-foreground/40 placeholder:tracking-[0.4em]",
+                            "focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring",
+                            "disabled:cursor-not-allowed disabled:opacity-50"
+                        )}
                     />
                 </div>
 
-                <button
-                    type="submit"
-                    className={styles.submitButton}
-                    disabled={isSubmitting}
-                >
-                    {isSubmitting && <span className={styles.spinner} />}
+                <Button type="submit" className="w-full" size="lg" disabled={isSubmitting}>
+                    {isSubmitting && <Loader2 className="animate-spin" />}
                     {msgStr("doLogIn")}
-                </button>
+                </Button>
             </form>
         </Template>
     );

@@ -1,8 +1,8 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import { keycloakify } from "keycloakify/vite-plugin";
+import { fileURLToPath, URL } from "node:url";
 
-// https://vitejs.dev/config/
 export default defineConfig({
     plugins: [
         react(),
@@ -10,5 +10,10 @@ export default defineConfig({
             themeName: "stackview-kc-theme",
             accountThemeImplementation: "none"
         })
-    ]
+    ],
+    resolve: {
+        alias: {
+            "@": fileURLToPath(new URL("./src", import.meta.url))
+        }
+    }
 });

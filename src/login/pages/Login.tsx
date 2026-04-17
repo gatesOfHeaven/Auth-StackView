@@ -1,14 +1,15 @@
 import { useState, type FormEvent } from "react";
+import { Loader2 } from "lucide-react";
 import type { PageProps } from "keycloakify/login/pages/PageProps";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import type { KcContext } from "../KcContext";
 import type { I18n } from "../i18n";
-import styles from "./Login.module.css";
 
 type LoginContext = Extract<KcContext, { pageId: "login.ftl" }>;
 
-export default function Login(
-    props: PageProps<LoginContext, I18n>
-) {
+export default function Login(props: PageProps<LoginContext, I18n>) {
     const { kcContext, i18n, doUseDefaultCss, Template, classes } = props;
 
     const {
@@ -28,7 +29,6 @@ export default function Login(
 
     function handleSubmit(e: FormEvent<HTMLFormElement>) {
         setIsSubmitting(true);
-        // let the browser submit natively — Keycloak handles the POST
         void e;
     }
 
@@ -38,13 +38,6 @@ export default function Login(
             : !realm.registrationEmailAsUsername
               ? msg("usernameOrEmail")
               : msg("email");
-
-    const usernameAutoComplete: string =
-        !realm.loginWithEmailAllowed
-            ? "username"
-            : !realm.registrationEmailAsUsername
-              ? "username email"
-              : "email";
 
     const hasSocialProviders =
         social?.displayInfo === true && (social.providers?.length ?? 0) > 0;
@@ -57,175 +50,143 @@ export default function Login(
             classes={classes}
             displayMessage={!messagesPerField.existsError("username", "password")}
             headerNode={msg("loginAccountTitle")}
-            displayInfo={realm.password && realm.registrationAllowed && !registrationDisabled}
+            displayInfo={
+                realm.password && realm.registrationAllowed && !registrationDisabled
+            }
             infoNode={
-                <span>
+                <>
                     {msg("noAccount")}{" "}
-                    <a href={url.registrationUrl} className={styles.forgotLink}>
+                    <a href={url.registrationUrl} className="font-medium text-foreground underline-offset-4 hover:underline">
                         {msg("doRegister")}
                     </a>
-                </span>
+                </>
             }
         >
             {/* ── Social providers ── */}
             {hasSocialProviders && (
-                <>
-                    <div className={styles.socialList}>
-                        {social!.providers!.map(p => (
-                            <a
-                                key={p.alias}
-                                href={p.loginUrl}
-                                className={styles.socialButton}
-                            >
-                                {p.displayName}
-                            </a>
-                        ))}
-                    </div>
-
-                    {realm.password && (
-                        <div className={styles.divider}>
-                            <span className={styles.dividerLine} />
-                            <span className={styles.dividerText}>
-                                {advancedMsgStr("or")}
-                            </span>
-                            <span className={styles.dividerLine} />
-                        </div>
-                    )}
-                </>
+                <div className="space-y-2">
+                    {social!.providers!.map(p => (
+                        <Button key={p.alias} variant="outline" className="w-full" asChild>
+                            <a href={p.loginUrl}>{p.displayName}</a>
+                        </Button>
+                    ))}
+                </div>
             )}
 
-            {/* ── Password login form ── */}
+            {/* ── Divider ── */}
+            {hasSocialProviders && realm.password && (
+                <div className="flex items-center gap-3">
+                    <div className="h-px flex-1 bg-border" />
+                    <span className="text-xs uppercase tracking-wider text-muted-foreground">
+                        {advancedMsgStr("or")}
+                    </span>
+                    <div className="h-px flex-1 bg-border" />
+                </div>
+            )}
+
+            {/* ── Credentials form ── */}
             {realm.password && (
                 <form
-                    className={styles.form}
+                    className="space-y-4"
                     action={url.loginAction}
                     method="post"
                     onSubmit={handleSubmit}
                 >
                     {/* Username / email */}
                     {!usernameHidden && (
-                        <div className={styles.fieldGroup}>
-                            <label htmlFor="username" className={styles.label}>
+                        <div className="space-y-1.5">
+                            <Label htmlFor="username">
                                 {usernameLabel}
-                                <span className={styles.required}>*</span>
-                            </label>
-                            <input
+                                <span className="text-destructive ml-0.5">*</span>
+                            </Label>
+                            <Input
                                 id="username"
                                 name="username"
-                                type={realm.loginWithEmailAllowed && realm.registrationEmailAsUsername ? "email" : "text"}
-                                autoComplete={usernameAutoComplete}
-                                defaultValue={
-                                    auth?.attemptedUsername ?? login.username ?? ""
+                                type={
+                                    realm.loginWithEmailAllowed &&
+                                    realm.registrationEmailAsUsername
+                                        ? "email"
+                                        : "text"
                                 }
+                                autoComplete="username email"
+                                defaultValue={auth?.attemptedUsername ?? login.username ?? ""}
                                 autoFocus={!auth?.showUsername}
-                                className={`${styles.input} ${
-                                    messagesPerField.existsError("username")
-                                        ? styles.inputError
-                                        : ""
-                                }`}
-                                aria-invalid={messagesPerField.existsError("username")}
-                                aria-describedby={
-                                    messagesPerField.existsError("username")
-                                        ? "username-error"
-                                        : undefined
-                                }
+                                hasError={messagesPerField.existsError("username")}
                                 disabled={isSubmitting}
                             />
                             {messagesPerField.existsError("username") && (
-                                <p
-                                    id="username-error"
-                                    className={styles.fieldError}
-                                    dangerouslySetInnerHTML={{
-                                        __html: messagesPerField.get("username"),
-                                    }}
-                                />
+                                <FieldError html={messagesPerField.get("username")} />
                             )}
                         </div>
                     )}
 
                     {/* Password */}
-                    <div className={styles.fieldGroup}>
-                        <label htmlFor="password" className={styles.label}>
-                            {msg("password")}
-                            <span className={styles.required}>*</span>
-                        </label>
-                        <input
-                            id="password"
-                            name="password"
-                            type="password"
-                            autoComplete="current-password"
-                            autoFocus={!!usernameHidden}
-                            className={`${styles.input} ${
-                                messagesPerField.existsError("password")
-                                    ? styles.inputError
-                                    : ""
-                            }`}
-                            aria-invalid={messagesPerField.existsError("password")}
-                            aria-describedby={
-                                messagesPerField.existsError("password")
-                                    ? "password-error"
-                                    : undefined
-                            }
-                            disabled={isSubmitting}
-                        />
-                        {messagesPerField.existsError("password") && (
-                            <p
-                                id="password-error"
-                                className={styles.fieldError}
-                                dangerouslySetInnerHTML={{
-                                    __html: messagesPerField.get("password"),
-                                }}
-                            />
-                        )}
-                    </div>
-
-                    {/* Remember me + Forgot password */}
-                    {(realm.rememberMe || realm.resetPasswordAllowed) && (
-                        <div className={styles.rowOptions}>
-                            {realm.rememberMe && (
-                                <label className={styles.checkboxGroup}>
-                                    <input
-                                        id="rememberMe"
-                                        name="rememberMe"
-                                        type="checkbox"
-                                        defaultChecked={!!login.rememberMe}
-                                        className={styles.checkbox}
-                                    />
-                                    <span className={styles.checkboxLabel}>
-                                        {msg("rememberMe")}
-                                    </span>
-                                </label>
-                            )}
+                    <div className="space-y-1.5">
+                        <div className="flex items-center justify-between">
+                            <Label htmlFor="password">
+                                {msg("password")}
+                                <span className="text-destructive ml-0.5">*</span>
+                            </Label>
                             {realm.resetPasswordAllowed && (
                                 <a
                                     href={url.loginResetCredentialsUrl}
-                                    className={styles.forgotLink}
+                                    className="text-xs text-muted-foreground hover:text-foreground transition-colors"
                                 >
                                     {msg("doForgotPassword")}
                                 </a>
                             )}
                         </div>
+                        <Input
+                            id="password"
+                            name="password"
+                            type="password"
+                            autoComplete="current-password"
+                            autoFocus={!!usernameHidden}
+                            hasError={messagesPerField.existsError("password")}
+                            disabled={isSubmitting}
+                        />
+                        {messagesPerField.existsError("password") && (
+                            <FieldError html={messagesPerField.get("password")} />
+                        )}
+                    </div>
+
+                    {/* Remember me */}
+                    {realm.rememberMe && (
+                        <label className="flex items-center gap-2 cursor-pointer">
+                            <input
+                                id="rememberMe"
+                                name="rememberMe"
+                                type="checkbox"
+                                defaultChecked={login.rememberMe === "on"}
+                                className="size-4 rounded border-input accent-zinc-900 cursor-pointer"
+                            />
+                            <span className="text-sm text-muted-foreground">
+                                {msg("rememberMe")}
+                            </span>
+                        </label>
                     )}
 
-                    {/* Hidden credential id (multi-factor flows) */}
                     <input
                         type="hidden"
                         name="credentialId"
                         value={auth?.selectedCredential ?? ""}
                     />
 
-                    <button
-                        type="submit"
-                        className={styles.submitButton}
-                        disabled={isSubmitting}
-                    >
-                        {isSubmitting ? (
-                            <span className={styles.spinner} />
-                        ) : null}
+                    <Button type="submit" className="w-full" size="lg" disabled={isSubmitting}>
+                        {isSubmitting && <Loader2 className="animate-spin" />}
                         {msgStr("doLogIn")}
-                    </button>
+                    </Button>
                 </form>
             )}
         </Template>
+    );
+}
+
+function FieldError({ html }: { html: string }) {
+    return (
+        <p
+            className="text-xs text-destructive mt-1"
+            dangerouslySetInnerHTML={{ __html: html }}
+        />
     );
 }

@@ -1,8 +1,8 @@
-import type { ReactNode } from "react";
 import type { TemplateProps } from "keycloakify/login/TemplateProps";
+import { cn } from "@/lib/utils";
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import type { KcContext } from "./KcContext";
 import type { I18n } from "./i18n";
-import styles from "./Template.module.css";
 
 type KcTemplateProps = TemplateProps<KcContext, I18n>;
 
@@ -24,71 +24,73 @@ export default function Template(props: KcTemplateProps) {
     const showMessage =
         displayMessage &&
         message !== undefined &&
-        // suppress global warning when messagesPerField errors exist — those render inline
         !(message.type === "warning" && "messagesPerField" in kcContext);
 
     return (
-        <div className={styles.root}>
-            <div className={styles.container}>
+        <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4 py-12">
+            <div className="w-full max-w-sm space-y-7">
                 {/* ── Logo ── */}
-                <div className={styles.logo}>
-                    <div className={styles.logoMark}>SV</div>
-                    <span className={styles.logoText}>StackView</span>
+                <div className="flex items-center justify-center gap-2.5">
+                    <div className="size-9 rounded-lg bg-zinc-900 flex items-center justify-center text-white text-sm font-bold shrink-0">
+                        SV
+                    </div>
+                    <span className="text-lg font-semibold text-zinc-900 tracking-tight">
+                        StackView
+                    </span>
                 </div>
 
                 {/* ── Card ── */}
-                <div className={styles.card}>
-                    <div className={styles.cardHeader}>
-                        <h1 className={styles.cardTitle}>{headerNode}</h1>
-                    </div>
+                <Card>
+                    <CardHeader className="pb-4">
+                        <CardTitle>{headerNode}</CardTitle>
+                    </CardHeader>
 
-                    {showMessage && (
-                        <Alert type={message!.type} summary={message!.summary} />
-                    )}
-
-                    {children}
+                    <CardContent className="space-y-4">
+                        {showMessage && (
+                            <MessageBanner type={message!.type} summary={message!.summary} />
+                        )}
+                        {children}
+                    </CardContent>
 
                     {displayInfo && infoNode && (
-                        <div className={styles.infoSection}>{infoNode}</div>
+                        <CardFooter className="justify-center border-t pt-4">
+                            <p className="text-sm text-muted-foreground">{infoNode}</p>
+                        </CardFooter>
                     )}
-                </div>
+                </Card>
             </div>
         </div>
     );
 }
 
-/* ── Internal alert component ── */
+/* ── Inline message banner ── */
 
 type AlertType = "success" | "warning" | "error" | "info";
 
-function alertClass(type: AlertType): string {
-    switch (type) {
-        case "error":
-            return `${styles.alert} ${styles.alertError}`;
-        case "warning":
-            return `${styles.alert} ${styles.alertWarning}`;
-        case "success":
-            return `${styles.alert} ${styles.alertSuccess}`;
-        default:
-            return `${styles.alert} ${styles.alertInfo}`;
-    }
-}
+const alertStyles: Record<AlertType, string> = {
+    error: "bg-red-50 border-red-200 text-red-700",
+    warning: "bg-amber-50 border-amber-200 text-amber-700",
+    success: "bg-green-50 border-green-200 text-green-700",
+    info: "bg-blue-50 border-blue-200 text-blue-700",
+};
 
-function AlertIcon({ type }: { type: AlertType }): ReactNode {
-    const icons: Record<AlertType, string> = {
-        error: "✕",
-        warning: "⚠",
-        success: "✓",
-        info: "ℹ",
-    };
-    return <span className={styles.alertIcon}>{icons[type]}</span>;
-}
+const alertIcons: Record<AlertType, string> = {
+    error: "✕",
+    warning: "⚠",
+    success: "✓",
+    info: "ℹ",
+};
 
-function Alert({ type, summary }: { type: AlertType; summary: string }) {
+function MessageBanner({ type, summary }: { type: AlertType; summary: string }) {
     return (
-        <div className={alertClass(type)} role="alert">
-            <AlertIcon type={type} />
-            {/* summary can contain keycloak HTML snippets */}
+        <div
+            role="alert"
+            className={cn(
+                "flex items-start gap-2.5 rounded-lg border px-3.5 py-3 text-sm",
+                alertStyles[type]
+            )}
+        >
+            <span className="shrink-0 font-semibold leading-5">{alertIcons[type]}</span>
             <span dangerouslySetInnerHTML={{ __html: summary }} />
         </div>
     );

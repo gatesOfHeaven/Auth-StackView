@@ -1,14 +1,15 @@
 import { useState, type FormEvent } from "react";
+import { Loader2 } from "lucide-react";
 import type { PageProps } from "keycloakify/login/pages/PageProps";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import type { KcContext } from "../KcContext";
 import type { I18n } from "../i18n";
-import styles from "./Register.module.css";
 
 type RegisterContext = Extract<KcContext, { pageId: "register.ftl" }>;
 
-export default function Register(
-    props: PageProps<RegisterContext, I18n>
-) {
+export default function Register(props: PageProps<RegisterContext, I18n>) {
     const { kcContext, i18n, doUseDefaultCss, Template, classes } = props;
 
     const {
@@ -30,17 +31,10 @@ export default function Register(
         void e;
     }
 
-    /* ── Derive initial field values from profile attributes ── */
-    function attrValue(name: string): string {
-        return profile.attributesByName[name]?.value ?? "";
-    }
-
-    /* Whether a given attribute is in the profile (realm may omit some) */
-    function hasAttr(name: string): boolean {
-        return name in profile.attributesByName;
-    }
-
-    const showUsername = !realm.registrationEmailAsUsername;
+    const attrValue = (name: string) => profile.attributesByName[name]?.value ?? "";
+    const hasAttr = (name: string) => name in profile.attributesByName;
+    const fieldError = (name: string) =>
+        messagesPerField.existsError(name) ? messagesPerField.get(name) : undefined;
 
     return (
         <Template
@@ -50,17 +44,16 @@ export default function Register(
             classes={classes}
             displayMessage={false}
             headerNode={msg("registerTitle")}
-            displayInfo={false}
         >
             <form
-                className={styles.form}
+                className="space-y-4"
                 action={url.registrationAction}
                 method="post"
                 onSubmit={handleSubmit}
             >
                 {/* ── Name row ── */}
                 {(hasAttr("firstName") || hasAttr("lastName")) && (
-                    <div className={styles.row}>
+                    <div className="grid grid-cols-2 gap-3">
                         {hasAttr("firstName") && (
                             <Field
                                 id="firstName"
@@ -71,11 +64,7 @@ export default function Register(
                                 defaultValue={attrValue("firstName")}
                                 required
                                 disabled={isSubmitting}
-                                error={
-                                    messagesPerField.existsError("firstName")
-                                        ? messagesPerField.get("firstName")
-                                        : undefined
-                                }
+                                error={fieldError("firstName")}
                             />
                         )}
                         {hasAttr("lastName") && (
@@ -88,17 +77,12 @@ export default function Register(
                                 defaultValue={attrValue("lastName")}
                                 required
                                 disabled={isSubmitting}
-                                error={
-                                    messagesPerField.existsError("lastName")
-                                        ? messagesPerField.get("lastName")
-                                        : undefined
-                                }
+                                error={fieldError("lastName")}
                             />
                         )}
                     </div>
                 )}
 
-                {/* ── Email ── */}
                 {hasAttr("email") && (
                     <Field
                         id="email"
@@ -109,16 +93,11 @@ export default function Register(
                         defaultValue={attrValue("email")}
                         required
                         disabled={isSubmitting}
-                        error={
-                            messagesPerField.existsError("email")
-                                ? messagesPerField.get("email")
-                                : undefined
-                        }
+                        error={fieldError("email")}
                     />
                 )}
 
-                {/* ── Username (only when email ≠ username) ── */}
-                {showUsername && hasAttr("username") && (
+                {!realm.registrationEmailAsUsername && hasAttr("username") && (
                     <Field
                         id="username"
                         name="username"
@@ -128,19 +107,13 @@ export default function Register(
                         defaultValue={attrValue("username")}
                         required
                         disabled={isSubmitting}
-                        error={
-                            messagesPerField.existsError("username")
-                                ? messagesPerField.get("username")
-                                : undefined
-                        }
+                        error={fieldError("username")}
                     />
                 )}
 
-                {/* ── Password section ── */}
                 {passwordRequired && (
                     <>
-                        <div className={styles.divider} />
-
+                        <div className="border-t pt-2" />
                         <Field
                             id="password"
                             name="password"
@@ -149,13 +122,8 @@ export default function Register(
                             autoComplete="new-password"
                             required
                             disabled={isSubmitting}
-                            error={
-                                messagesPerField.existsError("password")
-                                    ? messagesPerField.get("password")
-                                    : undefined
-                            }
+                            error={fieldError("password")}
                         />
-
                         <Field
                             id="password-confirm"
                             name="password-confirm"
@@ -164,16 +132,11 @@ export default function Register(
                             autoComplete="new-password"
                             required
                             disabled={isSubmitting}
-                            error={
-                                messagesPerField.existsError("password-confirm")
-                                    ? messagesPerField.get("password-confirm")
-                                    : undefined
-                            }
+                            error={fieldError("password-confirm")}
                         />
                     </>
                 )}
 
-                {/* ── reCAPTCHA ── */}
                 {recaptchaRequired && recaptchaSiteKey && (
                     <div
                         className="g-recaptcha"
@@ -182,14 +145,10 @@ export default function Register(
                     />
                 )}
 
-                <button
-                    type="submit"
-                    className={styles.submitButton}
-                    disabled={isSubmitting}
-                >
-                    {isSubmitting && <span className={styles.spinner} />}
+                <Button type="submit" className="w-full" size="lg" disabled={isSubmitting}>
+                    {isSubmitting && <Loader2 className="animate-spin" />}
                     {msgStr("doRegister")}
-                </button>
+                </Button>
             </form>
         </Template>
     );
@@ -209,41 +168,27 @@ type FieldProps = {
     error?: string;
 };
 
-function Field({
-    id,
-    name,
-    type,
-    label,
-    autoComplete,
-    defaultValue = "",
-    required = false,
-    disabled = false,
-    error,
-}: FieldProps) {
-    const hasError = error !== undefined;
+function Field({ id, name, type, label, autoComplete, defaultValue = "", required, disabled, error }: FieldProps) {
     return (
-        <div className={styles.fieldGroup}>
-            <label htmlFor={id} className={styles.label}>
+        <div className="space-y-1.5">
+            <Label htmlFor={id}>
                 {label}
-                {required && <span className={styles.required}>*</span>}
-            </label>
-            <input
+                {required && <span className="text-destructive ml-0.5">*</span>}
+            </Label>
+            <Input
                 id={id}
                 name={name}
                 type={type}
                 autoComplete={autoComplete}
                 defaultValue={defaultValue}
-                disabled={disabled}
                 required={required}
-                className={`${styles.input} ${hasError ? styles.inputError : ""}`}
-                aria-invalid={hasError}
-                aria-describedby={hasError ? `${id}-error` : undefined}
+                disabled={disabled}
+                hasError={!!error}
             />
-            {hasError && (
+            {error && (
                 <p
-                    id={`${id}-error`}
-                    className={styles.fieldError}
-                    dangerouslySetInnerHTML={{ __html: error! }}
+                    className="text-xs text-destructive"
+                    dangerouslySetInnerHTML={{ __html: error }}
                 />
             )}
         </div>
