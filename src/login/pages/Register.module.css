@@ -1,0 +1,139 @@
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+
+.fieldGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.label {
+  font-size: 13px;
+  font-weight: 600;
+  color: #1a1f36;
+  letter-spacing: 0.1px;
+  display: flex;
+  align-items: center;
+  gap: 3px;
+}
+
+.required {
+  color: #df1b41;
+}
+
+.input {
+  width: 100%;
+  height: 44px;
+  padding: 0 14px;
+  border: 1.5px solid #d1d9e0;
+  border-radius: 8px;
+  font-size: 15px;
+  color: #1a1f36;
+  background: #ffffff;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  outline: none;
+  appearance: none;
+  box-sizing: border-box;
+}
+
+.input::placeholder {
+  color: #a8b2bd;
+}
+
+.input:focus {
+  border-color: #5469d4;
+  box-shadow: 0 0 0 3px rgba(84, 105, 212, 0.15);
+}
+
+.inputError {
+  border-color: #df1b41 !important;
+}
+
+.inputError:focus {
+  box-shadow: 0 0 0 3px rgba(223, 27, 65, 0.12) !important;
+}
+
+.fieldError {
+  font-size: 12.5px;
+  color: #df1b41;
+  line-height: 1.4;
+}
+
+.divider {
+  height: 1px;
+  background-color: #e8ecf1;
+  margin: 2px 0;
+}
+
+.submitButton {
+  width: 100%;
+  height: 46px;
+  background-color: #5469d4;
+  color: #ffffff;
+  border: none;
+  border-radius: 8px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.15s ease, transform 0.1s ease, box-shadow 0.15s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  letter-spacing: 0.1px;
+  margin-top: 4px;
+}
+
+.submitButton:hover:not(:disabled) {
+  background-color: #4258c9;
+  box-shadow: 0 2px 8px rgba(84, 105, 212, 0.35);
+}
+
+.submitButton:active:not(:disabled) {
+  transform: scale(0.99);
+}
+
+.submitButton:disabled {
+  background-color: #a5b4fc;
+  cursor: not-allowed;
+}
+
+.spinner {
+  width: 18px;
+  height: 18px;
+  border: 2px solid rgba(255, 255, 255, 0.4);
+  border-top-color: #ffffff;
+  border-radius: 50%;
+  animation: spin 0.65s linear infinite;
+  flex-shrink: 0;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.sectionLabel {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: #a0aab4;
+  margin-bottom: -6px;
+}
+
+@media (max-width: 420px) {
+  .row {
+    grid-template-columns: 1fr;
+  }
+}
