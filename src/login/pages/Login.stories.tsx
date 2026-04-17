@@ -58,3 +58,22 @@ export const RegistrationDisabled: Story = {
         },
     },
 };
+
+export const WithGitLabLogin: Story = {
+    args: {
+        kcContext: {
+            social: {
+                displayInfo: true,
+                providers: [
+                    {
+                        alias: "gitlab",
+                        displayName: "GitLab",
+                        loginUrl: "#",
+                        providerId: "gitlab",
+                        iconClasses: "",
+                    },
+                ],
+            },
+        },
+    },
+};

@@ -58,3 +58,25 @@ export const NoPasswordRequired: Story = {
         },
     },
 };
+
+export const WithGitLabLogin: Story = {
+    args: {
+        kcContext: {
+            // social is not typed on register.ftl but Keycloak passes it at runtime
+            ...(({
+                social: {
+                    displayInfo: true,
+                    providers: [
+                        {
+                            alias: "gitlab",
+                            displayName: "GitLab",
+                            loginUrl: "#",
+                            providerId: "gitlab",
+                            iconClasses: "",
+                        },
+                    ],
+                },
+            }) as object),
+        },
+    },
+};
