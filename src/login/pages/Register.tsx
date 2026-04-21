@@ -46,7 +46,7 @@ export default function Register(props: PageProps<RegisterContext, I18n>) {
             i18n={i18n}
             doUseDefaultCss={doUseDefaultCss}
             classes={classes}
-            displayMessage={false}
+            displayMessage={messagesPerField.exists("global")}
             headerNode={msg("registerTitle")}
         >
             {/* ── Social providers ── */}
@@ -88,7 +88,6 @@ export default function Register(props: PageProps<RegisterContext, I18n>) {
                                 autoComplete="given-name"
                                 defaultValue={attrValue("firstName")}
                                 required
-                                disabled={isSubmitting}
                                 error={fieldError("firstName")}
                             />
                         )}
@@ -101,7 +100,6 @@ export default function Register(props: PageProps<RegisterContext, I18n>) {
                                 autoComplete="family-name"
                                 defaultValue={attrValue("lastName")}
                                 required
-                                disabled={isSubmitting}
                                 error={fieldError("lastName")}
                             />
                         )}
@@ -117,7 +115,6 @@ export default function Register(props: PageProps<RegisterContext, I18n>) {
                         autoComplete="email"
                         defaultValue={attrValue("email")}
                         required
-                        disabled={isSubmitting}
                         error={fieldError("email")}
                     />
                 )}
@@ -131,7 +128,6 @@ export default function Register(props: PageProps<RegisterContext, I18n>) {
                         autoComplete="username"
                         defaultValue={attrValue("username")}
                         required
-                        disabled={isSubmitting}
                         error={fieldError("username")}
                     />
                 )}
@@ -146,7 +142,6 @@ export default function Register(props: PageProps<RegisterContext, I18n>) {
                             label={msgStr("password")}
                             autoComplete="new-password"
                             required
-                            disabled={isSubmitting}
                             error={fieldError("password")}
                         />
                         <Field
@@ -156,7 +151,6 @@ export default function Register(props: PageProps<RegisterContext, I18n>) {
                             label={msgStr("passwordConfirm")}
                             autoComplete="new-password"
                             required
-                            disabled={isSubmitting}
                             error={fieldError("password-confirm")}
                         />
                     </>

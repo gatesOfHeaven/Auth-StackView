@@ -115,7 +115,6 @@ export default function Login(props: PageProps<LoginContext, I18n>) {
                                 defaultValue={auth?.attemptedUsername ?? login.username ?? ""}
                                 autoFocus={!auth?.showUsername}
                                 hasError={messagesPerField.existsError("username")}
-                                disabled={isSubmitting}
                             />
                             {messagesPerField.existsError("username") && (
                                 <FieldError html={messagesPerField.get("username")} />
@@ -146,7 +145,6 @@ export default function Login(props: PageProps<LoginContext, I18n>) {
                             autoComplete="current-password"
                             autoFocus={!!usernameHidden}
                             hasError={messagesPerField.existsError("password")}
-                            disabled={isSubmitting}
                         />
                         {messagesPerField.existsError("password") && (
                             <FieldError html={messagesPerField.get("password")} />
