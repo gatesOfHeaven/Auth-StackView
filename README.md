@@ -36,11 +36,29 @@ npm run build-keycloak-theme
 Note that by default Keycloakify generates multiple .jar files for different versions of Keycloak.  
 You can customize this behavior, see documentation [here](https://docs.keycloakify.dev/features/compiler-options/keycloakversiontargets).
 
+For this project the account theme is initialized as a React-based Single-Page account console. The build produces theme JARs in `dist_keycloak/`, including `keycloak-theme-for-kc-all-other-versions.jar` for Keycloak 26+.
+
 # Initializing the account theme
 
 ```bash
 npx keycloakify initialize-account-theme
 ```
+
+The account theme is already initialized in this repository. The important files live under `src/account/`, with the account shell wired through `src/kc.gen.tsx`.
+
+## Deploying the account theme
+
+1. Copy the generated JAR from `dist_keycloak/` into Keycloak's providers directory, for example `/opt/keycloak/providers/`.
+2. Rebuild the Keycloak server image or run `bin/kc.sh build` if you are using an existing installation.
+3. Start Keycloak and verify the custom account theme appears in the realm theme picker.
+
+## Enabling the theme
+
+1. Open the Admin Console.
+2. Select the target realm.
+3. Go to `Realm Settings` > `Themes`.
+4. Set `Account Theme` to `stackview-kc-theme`.
+5. Save, then open `/realms/<realm>/account` to verify the custom `User Profile` page.
 
 # Initializing the email theme
 
