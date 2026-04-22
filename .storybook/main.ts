@@ -15,7 +15,10 @@ const config: StorybookConfig = {
         return mergeConfig(config, {
             resolve: {
                 alias: {
-                    "@": fileURLToPath(new URL("../src", import.meta.url))
+                    "@": fileURLToPath(new URL("../src", import.meta.url)),
+                    "attr-accept": fileURLToPath(
+                        new URL("../node_modules/attr-accept/dist/index.js", import.meta.url)
+                    )
                 }
             }
         });
