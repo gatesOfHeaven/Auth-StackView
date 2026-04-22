@@ -61,3 +61,5 @@ jspm_packages
 .github
 .claude
 .codex
+
+.env
