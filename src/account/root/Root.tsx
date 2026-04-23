@@ -14,8 +14,7 @@ import {
 import fetchContentJson from "../content/fetchContent";
 import { Environment, environment } from "../environment";
 import { usePromise } from "../utils/usePromise";
-import { Header } from "./Header";
-import { MenuItem, PageNav } from "./PageNav";
+import { MenuItem } from "./PageNav";
 import { routes } from "../routes";
 
 function mapRoutes(content: MenuItem[]): RouteObject[] {
@@ -46,7 +45,7 @@ export const Root = () => {
         {
           path: decodeURIComponent(new URL(environment.baseUrl).pathname),
           element: (
-            <Page header={<Header />} sidebar={<PageNav />} isManagedSidebar>
+            <Page>
               <Suspense fallback={<Spinner />}>
                 <Outlet />
               </Suspense>

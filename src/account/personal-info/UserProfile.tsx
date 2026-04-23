@@ -195,6 +195,12 @@ export function UserProfileView({
     );
 }
 
+function resolveDisplayName(displayName: string | undefined, t: (key: string) => string): string {
+    if (!displayName) return "";
+    const match = displayName.match(/^\$\{(.+)\}$/);
+    return match ? (t(match[1]) || displayName) : displayName;
+}
+
 function ProfileField({
     attribute,
     register,
@@ -204,17 +210,19 @@ function ProfileField({
     register: ReturnType<typeof useForm<UserRepresentation>>["register"];
     formErrors: FieldErrors<UserRepresentation>;
 }) {
+    const { t } = useTranslation();
     const name = fieldName(attribute.name);
     const fieldError = getFieldError(formErrors, name);
     const isTextArea = attribute.annotations?.inputType === "textarea";
     const isCore = coreFields.has(attribute.name);
     const readOnly = attribute.readOnly || (isCore && attribute.name === "username");
     const inputProps = register(name as any);
+    const displayName = resolveDisplayName(attribute.displayName, t as (key: string) => string);
 
     return (
         <div className={isTextArea ? "sm:col-span-2 space-y-1.5" : "space-y-1.5"}>
             <Label htmlFor={name}>
-                {attribute.displayName}
+                {displayName}
                 {attribute.required && <span className="text-destructive ml-0.5">*</span>}
             </Label>
 
@@ -223,7 +231,7 @@ function ProfileField({
                     id={name}
                     hasError={!!fieldError}
                     readOnly={readOnly}
-                    placeholder={attribute.displayName}
+                    placeholder={displayName}
                     {...inputProps}
                 />
             ) : (
@@ -232,7 +240,7 @@ function ProfileField({
                     type={attribute.name === "email" ? "email" : "text"}
                     hasError={!!fieldError}
                     readOnly={readOnly}
-                    placeholder={attribute.displayName}
+                    placeholder={displayName}
                     {...inputProps}
                 />
             )}
