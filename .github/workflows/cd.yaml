@@ -1,0 +1,24 @@
+name: CD - Deploy to DigitalOcean
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  build-and-deploy:
+        runs-on: [self-hosted, auth] # This tells it to run on YOUR Droplet
+        steps:
+            - uses: actions/checkout@v4
+            - name: Copy production secrets
+              run: cp /home/github-runner/actions-runner-auth/.env.auth .env
+            - name: Set up Node.js
+              uses: actions/setup-node@v4
+              with:
+                node-version: '24' # Or your specific version
+                cache: 'npm'
+            - run: npm install
+            - run: npm run build-keycloak-theme
+            - name: Deploy App
+              run: |
+                docker compose -f auth-compose.yml up -d
+                docker system prune -af
