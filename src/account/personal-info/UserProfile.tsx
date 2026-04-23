@@ -19,7 +19,7 @@ import {
 } from "@keycloakify/keycloak-ui-shared/keycloak-theme/shared/@patternfly/react-core";
 
 import type { Environment } from "../environment";
-import { TFuncKey, i18n } from "../i18n";
+type TFuncKey = any;
 import { useAccountAlerts } from "../utils/useAccountAlerts";
 import { usePromise } from "../utils/usePromise";
 import { loadUserProfile, updateUserProfile } from "../api/profileApi";

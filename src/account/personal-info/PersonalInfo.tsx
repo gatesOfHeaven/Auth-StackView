@@ -35,7 +35,7 @@ import {
 } from "../api/representations";
 import { Page } from "../components/page/Page";
 import type { Environment } from "../environment";
-import { TFuncKey, i18n } from "../i18n";
+type TFuncKey = any;
 import { useAccountAlerts } from "../utils/useAccountAlerts";
 import { usePromise } from "../utils/usePromise";
 
@@ -74,13 +74,6 @@ export const PersonalInfo = () => {
         ]),
       );
       await savePersonalInfo(context, { ...user, attributes });
-      const locale = attributes["locale"]?.toString();
-      if (locale)
-        i18n.changeLanguage(locale, (error) => {
-          if (error) {
-            console.warn("Error(s) loading locale", locale, error);
-          }
-        });
       context.keycloak.updateToken();
       addAlert(t("accountUpdatedMessage"));
     } catch (error) {
