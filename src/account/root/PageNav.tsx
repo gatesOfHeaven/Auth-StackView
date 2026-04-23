@@ -29,7 +29,7 @@ import {
 
 import fetchContentJson from "../content/fetchContent";
 import { environment, type Environment, type Feature } from "../environment";
-import { TFuncKey } from "../i18n";
+type TFuncKey = any;
 import { usePromise } from "../utils/usePromise";
 
 type RootMenuItem = {

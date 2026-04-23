@@ -2,8 +2,6 @@
 
 // @ts-nocheck
 
-import { i18n } from "../i18n";
-
 export const FORMAT_DATE_ONLY: Intl.DateTimeFormatOptions = {
   dateStyle: "long",
 };
@@ -18,5 +16,5 @@ export const FORMAT_DATE_AND_TIME: Intl.DateTimeFormatOptions = {
 };
 
 export function formatDate(date: Date, options = FORMAT_DATE_AND_TIME) {
-  return date.toLocaleString(i18n.languages, options);
+  return date.toLocaleString("en", options);
 }

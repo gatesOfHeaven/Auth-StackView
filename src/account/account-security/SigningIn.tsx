@@ -34,7 +34,7 @@ import {
 } from "../api/representations";
 import { EmptyRow } from "../components/datalist/EmptyRow";
 import { Page } from "../components/page/Page";
-import { TFuncKey } from "../i18n";
+type TFuncKey = any;
 import { formatDate } from "../utils/formatDate";
 import { usePromise } from "../utils/usePromise";
 
