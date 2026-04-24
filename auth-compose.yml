@@ -32,7 +32,8 @@ services:
 
       TZ: ${TZ}
     volumes:
-      - ./dist_keycloak/keycloak-theme-for-kc-22-to-25.jar:/opt/keycloak/providers/keycloak-theme-for-kc-22-to-25.jar
+      volumes:
+        - ./dist_keycloak/keycloak-theme-for-kc-22-to-25.jar:/opt/keycloak/providers/keycloak-theme-for-kc-22-to-25.jar:ro
       # - ./.auth:/opt/keycloak/themes
     ports:
       - "${KEYCLOAK_PORT}:8080"
