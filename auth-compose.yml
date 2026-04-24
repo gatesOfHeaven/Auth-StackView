@@ -3,7 +3,7 @@ version: "3.9"
 services:
   keycloak:
     image: quay.io/keycloak/keycloak:26.0
-    command: build --features=admin-fine-grained-authz && start-dev --features=admin-fine-grained-authz
+    command: start-dev --features=admin-fine-grained-authz
     environment:
       KC_FEATURES: admin-fine-grained-authz
       KC_DB: postgres
