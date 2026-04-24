@@ -39,8 +39,7 @@ export default function Login(props: PageProps<LoginContext, I18n>) {
               ? msg("usernameOrEmail")
               : msg("email");
 
-    const hasSocialProviders =
-        social?.displayInfo === true && (social.providers?.length ?? 0) > 0;
+    const hasSocialProviders = (social?.providers?.length ?? 0) > 0;
 
     return (
         <Template
@@ -68,7 +67,7 @@ export default function Login(props: PageProps<LoginContext, I18n>) {
                     {social!.providers!.map(p => (
                         <Button key={p.alias} variant="outline" className="w-full" asChild>
                             <a href={p.loginUrl} className="flex items-center gap-2">
-                                {p.alias === "gitlab" && <GitLabIcon className="size-4 shrink-0" />}
+                                {(p.alias === "gitlab" || p.providerId === "gitlab") && <GitLabIcon className="size-4 shrink-0" />}
                                 {p.displayName}
                             </a>
                         </Button>

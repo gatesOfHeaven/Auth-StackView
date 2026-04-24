@@ -23,7 +23,7 @@ export default function Register(props: PageProps<RegisterContext, I18n>) {
     } = kcContext;
 
     const social = (kcContext as Record<string, unknown>).social as
-        | { displayInfo: boolean; providers?: Array<{ alias: string; displayName: string; loginUrl: string }> }
+        | { displayInfo: boolean; providers?: Array<{ alias: string; providerId: string; displayName: string; loginUrl: string }> }
         | undefined;
 
     const { msg, msgStr } = i18n;
@@ -50,13 +50,13 @@ export default function Register(props: PageProps<RegisterContext, I18n>) {
             headerNode={msg("registerTitle")}
         >
             {/* ── Social providers ── */}
-            {social?.displayInfo && (social.providers?.length ?? 0) > 0 && (
+            {(social?.providers?.length ?? 0) > 0 && (
                 <>
                     <div className="space-y-2">
                         {social.providers!.map(p => (
                             <Button key={p.alias} variant="outline" className="w-full" asChild>
                                 <a href={p.loginUrl} className="flex items-center gap-2">
-                                    {p.alias === "gitlab" && <GitLabIcon className="size-4 shrink-0" />}
+                                    {(p.alias === "gitlab" || p.providerId === "gitlab") && <GitLabIcon className="size-4 shrink-0" />}
                                     {p.displayName}
                                 </a>
                             </Button>
