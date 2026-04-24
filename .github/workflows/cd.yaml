@@ -20,5 +20,6 @@ jobs:
             - run: npm run build-keycloak-theme
             - name: Deploy App
               run: |
-                docker compose -f auth-compose.yml up -d --force-recreate
-                docker system prune -af
+                docker compose -f auth-compose.yml down
+                docker system prune -f
+                docker compose -f auth-compose.yml up -d --build
