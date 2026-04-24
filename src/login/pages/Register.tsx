@@ -53,7 +53,7 @@ export default function Register(props: PageProps<RegisterContext, I18n>) {
             {(social?.providers?.length ?? 0) > 0 && (
                 <>
                     <div className="space-y-2">
-                        {social.providers!.map(p => (
+                        {social && social.providers!.map(p => (
                             <Button key={p.alias} variant="outline" className="w-full" asChild>
                                 <a href={p.loginUrl} className="flex items-center gap-2">
                                     {(p.alias === "gitlab" || p.providerId === "gitlab") && <GitLabIcon className="size-4 shrink-0" />}
