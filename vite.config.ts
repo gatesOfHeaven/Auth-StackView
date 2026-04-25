@@ -8,7 +8,8 @@ export default defineConfig({
         react(),
         keycloakify({
             themeName: "stackview-kc-theme",
-            accountThemeImplementation: "Single-Page"
+            accountThemeImplementation: "Single-Page",
+            doInjectOidcSpaInTheBundle: true
         })
     ],
     resolve: {
